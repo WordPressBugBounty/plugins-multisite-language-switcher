@@ -2,6 +2,8 @@
 
 namespace lloc\Msls;
 
+use lloc\Msls\Component\Component;
+
 /**
  * Abstraction for the hook classes
  *
@@ -29,19 +31,12 @@ class MslsMain {
 	 * @param MslsOptions        $options
 	 * @param MslsBlogCollection $collection
 	 */
-	public function __construct( MslsOptions $options, MslsBlogCollection $collection ) {
+	final public function __construct( MslsOptions $options, MslsBlogCollection $collection ) {
 		$this->options    = $options;
 		$this->collection = $collection;
 	}
 
-	/**
-	 * Factory
-	 *
-	 * @codeCoverageIgnore
-	 *
-	 * @return static
-	 */
-	public static function init() {
+	public static function create(): object {
 		return new static( msls_options(), msls_blog_collection() );
 	}
 
@@ -65,9 +60,9 @@ class MslsMain {
 	 *
 	 * @param int $object_id
 	 *
-	 * @return array
+	 * @return array<string, int>
 	 */
-	public function get_input_array( $object_id ) {
+	public function get_input_array( $object_id ): array {
 		$arr = array();
 
 		$current_blog = $this->collection->get_current_blog();
@@ -80,30 +75,16 @@ class MslsMain {
 			return $arr;
 		}
 
-		foreach ( $input_post as $k => $v ) {
-			list ( $key, $value ) = $this->get_input_value( $k, $v );
-			if ( $value ) {
-				$arr[ $key ] = $value;
+		$offset = strlen( Component::INPUT_PREFIX );
+		foreach ( $input_post as $key => $value ) {
+			if ( false === strpos( $key, Component::INPUT_PREFIX ) || empty( $value ) ) {
+				continue;
 			}
+
+			$arr[ substr( $key, $offset ) ] = intval( $value );
 		}
 
 		return $arr;
-	}
-
-	/**
-	 * Prepare input key/value-pair
-	 *
-	 * @param $key
-	 * @param $value
-	 *
-	 * @return array
-	 */
-	protected function get_input_value( $key, $value ) {
-		if ( false === strpos( $key, 'msls_input_' ) || empty( $value ) ) {
-			return array( '', 0 );
-		}
-
-		return array( substr( $key, 11 ), intval( $value ) );
 	}
 
 	/**
@@ -141,21 +122,21 @@ class MslsMain {
 	 * Save
 	 *
 	 * @param int    $object_id
-	 * @param string $class
+	 * @param string $class_name
 	 *
 	 * @codeCoverageIgnore
 	 */
-	protected function save( $object_id, $class ): void {
+	protected function save( $object_id, $class_name ): void {
 		if ( has_action( 'msls_main_save' ) ) {
 			/**
 			 * Calls completely customized save-routine
 			 *
 			 * @param int $object_id
-			 * @param string Classname
+			 * @param string $class_name
 			 *
 			 * @since 0.9.9
 			 */
-			do_action( 'msls_main_save', $object_id, $class );
+			do_action( 'msls_main_save', $object_id, $class_name );
 
 			return;
 		}
@@ -168,7 +149,7 @@ class MslsMain {
 
 		$language = $this->collection->get_current_blog()->get_language();
 		$msla     = new MslsLanguageArray( $this->get_input_array( $object_id ) );
-		$options  = new $class( $object_id );
+		$options  = new $class_name( $object_id );
 		$temp     = $options->get_arr();
 
 		if ( 0 != $msla->get_val( $language ) ) {
@@ -184,10 +165,10 @@ class MslsMain {
 			$larr_id  = $msla->get_val( $language );
 
 			if ( 0 != $larr_id ) {
-				$options = new $class( $larr_id );
+				$options = new $class_name( $larr_id );
 				$options->save( $msla->get_arr( $language ) );
 			} elseif ( isset( $temp[ $language ] ) ) {
-				$options = new $class( $temp[ $language ] );
+				$options = new $class_name( $temp[ $language ] );
 				$options->delete();
 			}
 

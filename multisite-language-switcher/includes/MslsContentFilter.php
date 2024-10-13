@@ -10,9 +10,6 @@ class MslsContentFilter {
 		$this->options = $options;
 	}
 
-	/**
-	 * @codeCoverageIgnore
-	 */
 	public static function init(): void {
 		$obj = new self( msls_options() );
 
@@ -20,8 +17,6 @@ class MslsContentFilter {
 	}
 
 	/**
-	 * Filter for the_content()
-	 *
 	 * @param string $content
 	 *
 	 * @return string
@@ -43,7 +38,7 @@ class MslsContentFilter {
 	 * @return string
 	 */
 	public function filter_string( $pref = '<p id="msls">', $post = '</p>' ) {
-		$links_arr = MslsOutput::init()->get( 1, true, true );
+		$links_arr = MslsOutput::create()->get( 1, true, true );
 		$links_str = $this->format_available_languages( $links_arr );
 
 		/* translators: %s: list of languages */
@@ -66,6 +61,10 @@ class MslsContentFilter {
 		return ! empty( $output ) ? $pref . $output . $post : '';
 	}
 
+	/**
+	 * @param string[] $links
+	 * @return string|null
+	 */
 	public function format_available_languages( array $links ): ?string {
 		if ( empty( $links ) ) {
 			return null;
