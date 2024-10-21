@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => 'lloc/multisite-language-switcher',
-        'pretty_version' => '2.9.2',
-        'version' => '2.9.2.0',
-        'reference' => '1c165f8ac8603107bd0782250da838d209e7b684',
+        'pretty_version' => '2.9.3',
+        'version' => '2.9.3.0',
+        'reference' => '761a0c37546ca9de03402e097b3560f1e575d1d0',
         'type' => 'wordpress-plugin',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -20,9 +20,9 @@
             'dev_requirement' => false,
         ),
         'lloc/multisite-language-switcher' => array(
-            'pretty_version' => '2.9.2',
-            'version' => '2.9.2.0',
-            'reference' => '1c165f8ac8603107bd0782250da838d209e7b684',
+            'pretty_version' => '2.9.3',
+            'version' => '2.9.3.0',
+            'reference' => '761a0c37546ca9de03402e097b3560f1e575d1d0',
             'type' => 'wordpress-plugin',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
